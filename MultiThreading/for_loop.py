@@ -19,7 +19,7 @@ from threading import Thread
 def count(i):
     print("Thread %i is sleeping..." %i)
     time.sleep(2)
-    print("Thread %i is running..." % i)
+    print("Thread %i is running actively..." % i)
 
 for i in range (10):
     th=Thread(target=count,args=(i, ))
