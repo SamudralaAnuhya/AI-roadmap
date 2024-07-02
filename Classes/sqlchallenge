@@ -1,0 +1,44 @@
+-- 1. Provide the list of markets in which customer "Atliq Exclusive" operates its business in the APAC region.
+
+SELECT market FROM gdb023.dim_customer where  (customer = "Atliq Exclusive" and region = "APAC") Group by market order by Market;
+
+-- 2. What is the percentage of unique product increase in 2021 vs. 2020? The final output contains these fields,
+-- unique_products_2020 unique_products_2021 percentage_chg
+
+select x.MONTHLY_2020 as unique_products_2020   , y.MONTHLY_2021 as  unique_products_2021  , round(( y.MONTHLY_2021-x.MONTHLY_2020)*100/x.MONTHLY_2020 ,2) as percentage_chg from
+( (select count(Distinct(product_code)) as MONTHLY_2020 from gdb023.fact_sales_monthly where fiscal_year = 2020) x ,
+  (select 	count(Distinct(product_code)) as Monthly_2021 from gdb023.fact_sales_monthly where fiscal_year = 2021) y );
+
+  with CTE AS(
+  select fiscal_year , count(distinct product_code) as unique_product from gdb023.fact_sales_monthly where fiscal_year in (2020 ,2021) group by fiscal_year)
+  select cte2020.unique_product as unique_product_2020,
+		 cte2021.unique_product as unique_product_2021,
+         round((cte2021.unique_product-cte2020.unique_product) *100/cte2020.unique_product , 2) as percentage_chg
+  From cte cte2020 join cte cte2021 on  cte2020.fiscal_year = 2020 and cte2021.fiscal_year = 2021;
+
+-- Provide a report with all the unique product counts for each segment and sort them in descending order of product counts.
+--   The final output contains 2 fields, segment product_count
+SELECT segment , count(distinct(PRODUCT_CODE)) as Product_count fROM gdb023.dim_product  GROUP BY segment ORDER BY Product_count DESC  ;
+
+
+--   Follow-up: Which segment had the most increase in unique products in 2021 vs 2020? The final output contains these fields,
+--   segment product_count_2020 product_count_2021 difference
+with CTE1 as
+(select segment ,  fiscal_year , count(distinct procuct_code) as unique_product from gdb023.fact_sales_monthly  where fiscal_year in (2020 ,2021) group by fiscal_year)
+select cte112020.unique_product as  unique_product_2020,
+	cte12021.unique_product as unique_product_2021,
+    (cte12021.unique_product-cte12020.unique_product) as difference
+    from cte1 cte12020 join cte1 cte12021
+    on  cte12020.fiscal_year = 2020 and cte12021.fiscal_year = 2021;
+
+
+-- Get the products that have the highest and lowest manufacturing costs.
+-- The final output should contain these fields, product_code product manufacturing_cost
+
+select products
+
+
+
+
+
+
